@@ -20,7 +20,7 @@
     * [执行测试](part3/test.md)
     * [输出预处理](part3/pre_proces.md)
     * [运行配置](part3/config.md)
-    * [建立输出](part3/output/md)
+    * [建立输出](part3/output.md)
 * [拓展Robot](part4/README.md)
     * [建立测试库](part4/library.md)
     * [远程库接口](part4/remote.md)
