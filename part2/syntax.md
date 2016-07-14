@@ -214,3 +214,49 @@ Robot框架使用的转义字符是反斜杠`\`，还有一些[内置变量]()`$
 <p></p>
 >###### 注意 
 `\x`、`\u`和`\U`能够转义序列是Robot2.8.2以后才有的新特性
+
+<h5>避免忽略空白单元格</h5>
+如果有必要保留空白单元格，比如作为一个keyword的参数或者其他原因，就需要保留避免空白单元格被[忽略]()。所有格式中的行尾的空白单元格必须要转义表示，在[空格分隔的格式]()里所有的空值都需要转义
+
+空单元格可以用反斜杠转义或者使用内置变量`${EMPTY}`。后者比较推荐，因为它更容易理解。有一个例外的情况，在空格分隔的格式中，用于表示for循环中的缩进。这些情况在下面的HTML格式和普通文本格式中说明。
+
+|Test Case  |   Action  |  Argument   |   Argument    |    Argument  |
+|-----------|-----------|-------------|---------------|--------------|
+|Using backslash | Do Something    |  first arg  | \         |      |
+|Using ${EMPTY}  | Do Something    |  first arg  | ${EMPTY}  |      |
+|Non-trailing empty | Do Something |            |  second arg | # No escaping needed in HTML|
+|For loop    |   :FOR   |   ${var}     |   IN   |  @{VALUES}    |
+|            |          |   Log |  ${var} | # No escaping needed here either|
+
+
+```
+*** Test Cases ***
+Using backslash
+    Do Something    first arg    \
+Using ${EMPTY}
+    Do Something    first arg    ${EMPTY}
+Non-trailing empty
+    Do Something    ${EMPTY}     second arg    # Escaping needed in space separated format
+For loop
+    :FOR    ${var}    IN    @{VALUES}
+    \    Log    ${var}                         # Escaping needed here too
+```
+
+<h5>避免忽略空格</h5>
+因为前导、尾部、连续的空格都会被忽略，当他们要作为keyword或者其他元素的参数时，就需要转义表示。跟避免忽略空单元格一样，既可以用反斜杠转义也可以用[内建变量]()`${SPACE}`。
+
+转移空格的例子
+
+|     Escaping with backslash  |  Escaping with ${SPACE} |       Notes      |
+|------------------------------|—-------------- ---------|------------------|
+|   `\ leading space `      |   `${SPACE}leading space`   |                 |
+|   <code>trailing space \&nbsp;</coed>     |   `trailing space${SPACE}`  |Backslash must be after the space.|
+|       <code>\ \&nbsp;</code>       |  `${SPACE}${SPACE}`  |  Backslash needed on both sides.|
+|`consecutive \ \ spaces` | `consecutive${SPACE * 2}spaces`  | Using [extended variable syntax.]()|
+
+正如上边的例子所示，`${SPACE}`能够让测试资料更可读，在需要多个空格的时候，跟[拓展的变量语法]()结合会有很好的效果。
+
+
+
+
+
