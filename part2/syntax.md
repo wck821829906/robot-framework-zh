@@ -53,7 +53,7 @@ Robot框架根据文件拓展名来选择相应的解析器。拓展名的大小
 
 可以只用几个空格做分隔，也可以用很多个，但至少要两个空格，这样能更好的对齐。因为TSV的对齐是不可控制的，所以能在编辑器里修改TSV格式(的对齐)是一个很不错的事情。
 
-```js
+```
 *** Settings ***
 Library       OperatingSystem
 
@@ -106,8 +106,8 @@ My Keyword
 
 用管道符+空格就没必要用转义表示空格了(除了[行尾的空格]()）。只要一个很重要的事情，如果在实际的测试资料中真的要出现管道符，那就需要用反斜线转义(\|）
 
-```bash
-| *** Test Cases *** |                 |                 |                      |
+```
+| *** Test Cases *** |                 |                 |                     |
 | Escaping Pipe      | ${file count} = | Execute Command | ls -1 *.txt \| wc -l |
 |                    | Should Be Equal | ${file count}   | 42  
 ```
@@ -185,7 +185,7 @@ Robot框架使用的转义字符是反斜杠`\`，还有一些[内置变量]()`$
 反斜杠符还能表示转义序列，否则这些字符很难或者不可能在测试资料中出现。
 
 
-转义序列
+形成转义序列
 
 |   序列  |  含义   | 例子 |
 |---------|--------|-----|
@@ -243,20 +243,67 @@ For loop
 ```
 
 <h5>避免忽略空格</h5>
+
 因为前导、尾部、连续的空格都会被忽略，当他们要作为keyword或者其他元素的参数时，就需要转义表示。跟避免忽略空单元格一样，既可以用反斜杠转义也可以用[内建变量]()`${SPACE}`。
 
-转移空格的例子
+转义空格的例子
 
-|     Escaping with backslash  |  Escaping with ${SPACE} |       Notes      |
-|------------------------------|—-------------- ---------|------------------|
-|   `\ leading space `      |   `${SPACE}leading space`   |                 |
-|   <code>trailing space \&nbsp;</coed>     |   `trailing space${SPACE}`  |Backslash must be after the space.|
-|       <code>\ \&nbsp;</code>       |  `${SPACE}${SPACE}`  |  Backslash needed on both sides.|
-|`consecutive \ \ spaces` | `consecutive${SPACE * 2}spaces`  | Using [extended variable syntax.]()|
+|  Escaping with backslash  |  Escaping with ${SPACE} |    Notes  |
+|-----|-----|-----|
+| `\ leading space` |   `${SPACE}leading space`   |    |
+| `trailing space \` | `trailing space${SPACE}`  | Backslash must be after the space. |
+|       `\ \`       |  `${SPACE}`  |  Backslash needed on both sides.|
+|`consecutive \ \ spaces` | `consecutive${SPACE * 3}spaces`  | Using [extended variable syntax.]() |
 
 正如上边的例子所示，`${SPACE}`能够让测试资料更可读，在需要多个空格的时候，跟[拓展的变量语法]()结合会有很好的效果。
 
+<h4 id="2-1-4-4">将测试资料分到多行</h4>
 
+如果一行有太多列以至于印象可读性，可以试着用省略号(`...`)来表示连续上一行(的内容)。在TestCase和keyword表格中，省略号前面必须放至少一个空单元格。在Settings表格和Variable表格中，省略号可以直接放在某项settings或者variable的名字下边。在所有表格中，省略号前面的空单元格都会被忽略掉。
+
+还有，值只有一个的settings（主要是documentation）可以将值分为好几列。在TestData被解析的时候，这些列会用空格连起来。从robot2.7开始，documentation和其他元数据如果是多列的值，会[用换行连接起来]()
+
+没有分割的测试资料
+
+| Settings | Value |  Value |  Value |  Value |  Value |  Value | 
+|----------|-------|--------|--------|--------|--------|--------|
+|Default Tags | tag-1 | tag-2 | tag-3 | tag-4 |  tag-5 |  tag-6 |
+
+| Variable | Value |  Value |  Value |  Value |  Value |  Value | 
+|----------|-------|--------|--------|--------|--------|--------|
+| @{LIST}  |  this | list   |  has   | quite  |  many  |  items |
+
+|Test Case  | Action | Argument |   Arg | Arg | Arg | Arg | Arg | Arg |
+|-----------|--------|----------|-------|-----|----|-------|-----|-----|
+|  Example  | [Documentation] | Documentation for this test case.\n This can get quite long...     | | | | | | |
+|             | [Tags] | t-1| t-2| t-3 |t-4 |t-5 | | |
+|        |   Do X  |  one | two | three |  four  |  five |  six|  
+| |    ${var} =  |  Get X |  1  | 2 |  3  | 4  | 5  | 6 |
+
+分割过的测试资料
+
+
+| Settings | Value |  Value |  Value | 
+|----------|-------|--------|--------|
+|Default Tags | tag-1 | tag-2 | tag-3 | 
+| ... |tag-4 |  tag-5 |  tag-6 |
+
+| Variable | Value |  Value |  Value |  
+|----------|-------|--------|--------|
+| @{LIST}  |  this | list   |  has   |
+| ...     | quite  |  many  |  items |
+
+|Test Case  | Action | Argument |   Arg | Arg | 
+|-----------|--------|----------|-------|-----|
+|  Example  | [Documentation] | Documentation |for this |test case.|
+|           | ...      |        This can get  |  quite  |  long... |   
+|           |   [Tags] |      t-1|   t-2   |  t-3
+|           |...   |        |t-4    |     t-5 |
+|        |   Do X  |  one | two | three |
+|         | ... |  four  |  five |  six|  
+| |    ${var} =  |  Get X |  1  | 2 |  
+|   |   |   ...|  3  | 4  |
+|   |   |   ...| 5  | 6 |
 
 
 
