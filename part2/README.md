@@ -2,7 +2,7 @@
 
 [2.1 测试数据语法](syntax.md)
 
-[2.2 建立测试用例](test_case.md)
+[2.2 建立测试用例](testcase.md)
 
 [2.3 建立测试套件](test_suite.md)
 

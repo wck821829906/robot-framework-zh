@@ -8,7 +8,7 @@
     * [示范](part1/demo.md)
 * [建立测试数据](part2/README.md)
     * [测试数据语法](part2/syntax.md)
-    * [建立测试用例](part2/test_case.md)
+    * [建立测试用例](part2/testcase.md)
     * [建立测试套件](part2/test_suite.md)
     * [使用测试库](part2/library.md)
     * [变量](part2/variable.md)
