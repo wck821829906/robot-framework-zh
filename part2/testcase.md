@@ -31,3 +31,60 @@
 
 <h3 id="2-2-1-1">基本语法</h3>
 
+测试用例是有testcase表格中的keyword构成的，[keyword可以用[测试库]()或者资源文件中导入，也可以在测试用例文件本身的通过[keyword表格]()中创建。
+
+测试用例表的第一列是测试用例的名字，一个测试用例从表名开始一直到下一个表名或者到测试用例表的末尾。如果第一个测试和表头直接有东西，那这是一个错误
+
+第二列通常是keyword的名字，有一个例外的情况：[从keyword的返回值中设置变量]()的时候，第二列或者可能的后续几列都是变量名，最后是一个keyword的名字。这两种情况，keyword名后边可能会有参数列。
+
+```
+*** Test Cases ***
+Valid Login
+    Open Login Page
+    Input Username    demo
+    Input Password    mode
+    Submit Credentials
+    Welcome Page Should Be Open
+
+Setting Variables
+    Do Something    first argument    second argument
+    ${value} =    Get Some Value
+    Should Be Equal    ${value}    Expected value
+```
+
+<h3 id="2-2-1-2">测试用例表中的设定</h3>
+
+测试用例也可以有他们自己的设定。这些设置的名字总是在第二列，就是正常keyword名字的位置，他们的值紧跟其后。他们的名字用方括号括起来，好跟keyword区分。下边列出一些settings，稍后介绍他们。
+
+*[Documentation]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用来指定[测试用例说明]()
+
+*[Tags]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用来[给测试用例打标签]()
+
+*[Setup], [Teardown]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;指定测试的setup和teardown
+
+*[template]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;指定要使用的[模板关键字]().这个测试的内容全部是这个关键字的参数
+
+*[timeout]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用来设置[测试用例超时时间]()[超时]()会在今后单独讨论
+
+有settings的testcase举例：
+
+```
+*** Test Cases ***
+Test With Settings
+    [Documentation]    Another dummy test
+    [Tags]    dummy    owner-johndoe
+    Log    Hello, world!
+```
+
+<h3 id="2-2-1-3">settings表中与testcase相关的settings</h3>
+
+settings表可以有这几种跟testcase相关的setting。这些setting是主要是刚刚列举的testcase setting的默认值。
+
+*Force Tags, Default Tags*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tags的强制默认值
+
+*Test Setup, Test Teardown**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+test setup and teardown的默认值
+
+*Test Template**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;默认使用的template keyword.
+
+*Test Timeout**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test case timeout的默认值. Timeouts 会单独拿出一节来讨论.
