@@ -6,10 +6,10 @@
     - [测试用例表格中的设定](#2-2-1-2)
     - [设置表格中跟测试用例相关的设定](#2-2-1-3)
 * [2.2.2 使用参数](#2-2-2)
-    - [强制性参数](#2-2-2-)
-    - [默认值](#2-2-2-)
-    - [不定长参数](#2-2-2-)
-    - [命名参数](#2-2-2-)
+    - [强制性参数](#2-2-2-1)
+    - [默认值](#2-2-2-2)
+    - [不定长参数](#2-2-2-3)
+    - [命名参数](#2-2-2-4)
     - [嵌入到keyword名字中的参数](#2-2-2-)
 * [2.2.3 失败](#2-2-3-)
     - [测试用例何时会失败](#2-2-3-1)
@@ -88,3 +88,59 @@ test setup and teardown的默认值
 *Test Template**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;默认使用的template keyword.
 
 *Test Timeout**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test case timeout的默认值. Timeouts 会单独拿出一节来讨论.
+
+<h2 id="2-2-2">使用参数</h2>
+
+前面的例子已经展示了使用不同参数的keyword，这一节我们将更下彻底的讨论这个重要的特性。我们将讨论如何实现使用不同参数的自定义keyword和库keyword。
+
+keyword可以不接收或接收多个参数，有的参数还可以有默认值。接收什么样的参数取决于keyword是怎么实现的。查看这些信息最好在keyword的说明中，这一节的例子中的说明全部是有[Libdoc]()工具生成的，用javadoc这样的通用文档工具也可以生成相同的信息。
+
+<h4 id="2-2-2-1">强制性参数</h4>
+
+大多数keyword都有的几个参数必须要给定的参数，在他们的说明文档中，参数名通常用逗号隔开，比如`first, second, third`。强制性参数的参数名并不重要，除了要说明他们的作用，重要的是个数要与说明文档中的完全一致。参数不足或者给太多都会导致错误。
+
+下班的测试用例用了【OperatingSystem]()中的*Create Directory*和*Copy File* keyword，他们的参数分别是`path`和`source`，`destination`，这意味着他们分别有一个和两个参数。最后一个keyword，*No Operation*，不需要参数
+
+```
+*** Test Cases ***
+Example
+    Create Directory    ${TEMPDIR}/stuff
+    Copy File    ${CURDIR}/file.txt    ${TEMPDIR}/stuff
+    No Operation
+```
+
+<h4 id="2-2-1-2">默认值</h4>
+
+参数经常会有默认值，当然也可以不给。在documentation中，默认值用等号跟参数名分隔，比如`name=default value`，但是有些用Java写的的keyword可能有多个不同参数的实现。一个keyword可以全部参数都有默认值，但是有默认值的参数后边不能再有强制性参数。
+
+下边的例子说明了如何使用默认值，keyword *Create File*有这几个参数 `path, content=, encoding=UTF-8`。这个keyword不给参数或者给多于3个参数都会失败。
+
+```
+*** Test Cases ***
+Example
+    Create File    ${TEMPDIR}/empty.txt
+    Create File    ${TEMPDIR}/utf-8.txt         Hyvä esimerkki
+    Create File    ${TEMPDIR}/iso-8859-1.txt    Hyvä esimerkki    ISO-8859-1
+```
+
+<h4 id="2-2-1-3">不定长参数</h4>
+
+有可能一个keyword需要接受任意数量的参数，这些所谓的*varargs*可以是强制性参数和默认值参数联接起来，但是总放在强制性参数和默认值参数后边。文档中，他们参数名前面有一个星号，比如`*varargs`
+
+比如，[OperatingSystem]()中的*Create Directory*和*Copy File* keyword，分别有参数 `*paths` 和 `base, *parts`,前者可以传入任意数量的参数，后者则至少传一个。
+
+```
+*** Test Cases ***
+Example
+    Remove Files    ${TEMPDIR}/f1.txt    ${TEMPDIR}/f2.txt    ${TEMPDIR}/f3.txt
+    @{paths} =    Join Paths    ${TEMPDIR}    f1.txt    f2.txt    f3.txt    f4.txt
+```
+
+
+
+
+
+
+
+
+
