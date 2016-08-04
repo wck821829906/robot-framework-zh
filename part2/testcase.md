@@ -252,13 +252,27 @@ Run Program
 
 <h3 id="2-2-3">失败</h3>
 
-当一个testcase里的任意一个keyword失败了，那这个testcase也就失败了。正常情况下，这说明testcase的执行终止了，可能会执行完【test TearDown】（），然后就去执行下一个testcase了，也可能是一个【可以继续执行的失败】（）就算是遇到意外的终止。
-
 <h4 id="2-2-3-1">测试用例什么时候会失败</h4>
 
-
-
-
-
+当一个testcase里的任意一个keyword失败了，那这个testcase也就失败了。正常情况下，这说明testcase的执行终止了，可能会执行完[test TearDown]() ，然后就去执行下一个testcase了，也可能是一个[可以继续执行的失败]() 就算是遇到意外的终止。
 
 <h4 id="2-2-3-2">失败信息</h4>
+
+testcaes的错误信息是直接从失败的keyword中得到的。失败的信息通畅是keyword自己生成的，但也有keyword支持配置错误信息
+
+有些环境下，比如当使用可继续执行的失败的时候，一个testcase可以失败很多次。这种情况下，失败信息由每个错误信息连接起来，大量的错误信息会在中途就去掉，这样可以保值[报告]() 更容易读取。而失败的keyword可以在[日志]() 文件中看到完整的错误信息
+
+默认的错误信息是普通文本，但是从Robot2.8开始，也可以用[包含HTML格式]() 的文本了。这类错误的信息用`*HTML*`的标记开头，这个标记并不会出现在最后的报告和日志文件中，下边第二个例子中自定义的错误信息使用了的HTML。
+
+```
+*** Test Cases ***
+Normal Error
+    Fail    This is a rather boring example...
+
+HTML Error
+    ${number} =    Get Number
+    Should Be Equal    ${number}    42    *HTML* Number is not my <b>MAGIC</b> number.
+```
+
+
+
