@@ -274,5 +274,36 @@ HTML Error
     Should Be Equal    ${number}    42    *HTML* Number is not my <b>MAGIC</b> number.
 ```
 
+<h3 id="2-2-4">testcase名称和说明文档</h3>
 
+testcase名字直接来自于testcase表，就是testcase那一列里填的东西。每一个Test Suite里的testcase的名字都唯一，与此相关的是你可以在testcase中用[自动化变量]() `${TEST_NAME}`来引用testcase的名字。只要一项测试开始了，包括所有的自定义keyword、test setup以及Test TearDown，那这个变量就是可用的。
 
+*[Documentation]*设定运行你为这个testcase设定一个自由的说明文档。这段说明会和测试日志测试报告一起在控制台输出行中显示出来。说明文档也可以使用[HTML风格]，还可以用[变量]() 让说明文档动态化。
+
+如果说明文档被分成了好多列，那么每一列的内容将会用空格连接起来，在使用[HTML格式]和列很窄的时候很有用。如果说明文档被[分成了好几行]() ，那他们会[用换行符连接起来]() 。日后一行里已经有了换行符护照[转义的反斜杠]() ，那么最后的说明文档中也不会添加新的换行符
+
+```
+*** Test Cases ***
+Simple
+    [Documentation]    Simple documentation
+    No Operation
+
+Formatting
+    [Documentation]    *This is bold*, _this is italic_  and here is a link: http://robotframework.org
+    No Operation
+
+Variables
+    [Documentation]    Executed at ${HOST} by ${USER}
+    No Operation
+
+Splitting
+    [Documentation]    This documentation    is split    into multiple columns
+    No Operation
+
+Many lines
+    [Documentation]    Here we have
+    ...                an automatic newline
+    No Operation
+```
+
+testcase有一个简洁准确的名字很重要，这样就不用写说明文档了。如果一个testcase因为内部的逻辑需要添加说明，那可能意味着testcase里的keyword需要更好的名字或者需要改进，而不是添加说明文档。最后，上边例子中的一些元数据，比如环境和用户信息，最后用[标签]() 来指定。
