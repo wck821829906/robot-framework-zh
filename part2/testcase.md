@@ -310,15 +310,15 @@ testcase有一个简洁准确的名字很重要，这样就不用写说明文档
 <h3 id="2-2-5">2.2.5 给testcase打标签</h3>
 
 在Robot中使用标签是一个简单而强大的分类testcase的方法。标签是普通文本，如果以下的需求可以使用标签：
-- 标签会显示在测试资料的【报告】（）、【日志】（）中，当然提供了测试用例元数据的测试资料也会显示。
-- 测试用例的【统计】（）（包括全部的、通过的、失败的）是基于标签自动收集的
-- 你可以用标签来选择【包括或者排除】（）要执行的测试用例
+- 标签会显示在测试资料的[报告]()、[日志]()中，当然提供了测试用例元数据的测试资料也会显示。
+- 测试用例的[统计]()（包括全部的、通过的、失败的）是基于标签自动收集的
+- 你可以用标签来选择[包括或者排除]()要执行的测试用例
 - 你可以用标签来指定哪些测试用例是[严格的]()
 
 这一节只介绍如何设置测试用例的标签，下边列举了不同的设置方法。这些方法可以同时使用。
 
 Setting表中的*Force Tags*
-<br>在有这个setting的测试用例文件中，所有的testcase都会得到一个指定的标签。如果是在测试套件的【初始化文件】（）中使用，所有的子测试套件都会有这个标签。
+<br>在有这个setting的测试用例文件中，所有的testcase都会得到一个指定的标签。如果是在测试套件的[初始化文件]()中使用，所有的子测试套件都会有这个标签。
 
 Setting表中的*Default Tags*
 <br>没有*[Tag]*设置的testcase会被使用这个标签。测试套件的初始化文件不支持默认标签。
@@ -330,7 +330,7 @@ TestCase表中的*[Tag]*
 <br>所有没设置tag的testcase，都可以用这个选项设置tag。
 
 *Set Tags, Remove Tags, Fail and Pass Execution*等keyword
-<br>这些【内置】（）的keyword可以在测试执行过程中动态的操控tag
+<br>这些[内置]()的keyword可以在测试执行过程中动态的操控tag
 
 标签是自有文本，但是他们会被规范化，所以会被转换成小写而且会移除所有的空格。如果一个testcase有被同一个标签设置了好几次，那只会保留第一个。标签可以用变量表示，前提是变量必须存在。
 
@@ -371,9 +371,54 @@ Set Tags and Remove Tags Keywords
 <h4 id="2-2-5-1">保留的标签</h4>
 通常情况下，用户可以使用任何在他们的环境中能使用的标签。但是，有一些确定的标签有一些用来预定义Robot框架自己的标签，如果使用这些标签，可能会有一些意想不到的结果。所有Robot已经指定的和将来会使用的标签都有前缀`robot-`。为了避免这个问题，用户不应该使用任何`robot-`前缀的标签，除非确实要使用(那个标签)的特殊功能。
 
-在写这篇文章的时候，只有一个特殊的标签`robot-exit`在【优雅地停止测试执行】（）时，会被自动加入到测试。更多相似的用法，以后会加入的。
+在写这篇文章的时候，只有一个特殊的标签`robot-exit`在[优雅地停止测试执行]()时，会被自动加入到测试。更多相似的用法，以后会加入的。
 
+<h3 id="2-2-6">setup和teardown</h3>
 
+和其他自动化测试框架一样，robot也有类似的setup和TearDown功能。简单说，Test Setup就是在testcase执行前的事情，TearDown就是testcase执行后要做的事情。在robot中，setup和TearDown就是正常的keyword，如果需要可以传入参数。
+
+SetUp和TearDown总是单个keyword。如果他们需要执行多个独立的任务，就应该为此再创建一个更高级别的[自定义keyword]()。另一种办法是用[内置]()的的keyword *Run Keywords*执行多个keyword。
+
+有两种办法可以指定TearDown。第一种，testcase失败的时候也会执行，所以这种可以用于清理动作，不论testcase的状态如何。此外，所有TearDown中的keyword都会被执行，即使其中一个失败了。这种[错误后继续执行]()的功能也可以在正常keyword中应用，只不过在TearDown中的keyword默认开启的。
+
+最简单指定SetUp和TearDown的方法是在testcase文件的setting表中使用 *Test Setup* 和 *Test TearDown* 设定。独立的testcase也可以有自己的setup和TearDown。通过在TestCase表中的*[SetUp]*和*[TearDown]*，他们将覆盖*Test Setup*和*Test Teardown*设定。如果*[SetUp]*和*[TearDown]*后边没有keyword，那就意味着找个testcase没有keyword，还可以用值`NONE`来指定testcase没有setup/teardown。
+
+```
+*** Settings ***
+Test Setup       Open Application    App A
+Test Teardown    Close Application
+
+*** Test Cases ***
+Default values
+    [Documentation]    Setup and teardown from setting table
+    Do Something
+
+Overridden setup
+    [Documentation]    Own setup, teardown from setting table
+    [Setup]    Open Application    App B
+    Do Something
+
+No teardown
+    [Documentation]    Default setup, no teardown at all
+    Do Something
+    [Teardown]
+
+No teardown 2
+    [Documentation]    Setup and teardown can be disabled also with special value NONE
+    Do Something
+    [Teardown]    NONE
+
+Using variables
+    [Documentation]    Setup and teardown specified using variables
+    [Setup]    ${SETUP}
+    Do Something
+    [Teardown]    ${TEARDOWN}
+```
+
+setup或者TearDown中keyword的名字可以是个变量，通过在命令行中用变量来指定keyword名有利于在不同的环境中使用不同的setup和TearDown。
+
+>注意:
+<br>[测试套件可以用他们最鸡蛋setup和TearDown]().一个测试套件的setup会在所有testcase或者其子测试套件之前执行，测试套件的TearDown在他们之后执行。
 
 
 
