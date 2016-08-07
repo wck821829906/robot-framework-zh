@@ -150,8 +150,7 @@ Example
 
 出现在命名参数之后的位置参数，比如`| Keyword | arg=value | positional |`是不对的。Robot框架从2.8开始，这回导致一个错误。而命名参数内部的相互顺序可以任意。
 
->######注意 
->Robot框架2.8之前的版本 不能对没有默认值的参数起名字
+>注意:<br> Robot框架2.8之前的版本 不能对没有默认值的参数起名字
 
 <h5>使用变量的命名参数</h5>
 
@@ -274,7 +273,7 @@ HTML Error
     Should Be Equal    ${number}    42    *HTML* Number is not my <b>MAGIC</b> number.
 ```
 
-<h3 id="2-2-4">testcase名称和说明文档</h3>
+<h3 id="2-2-4">2.2.4 testcase名称和说明文档</h3>
 
 testcase名字直接来自于testcase表，就是testcase那一列里填的东西。每一个Test Suite里的testcase的名字都唯一，与此相关的是你可以在testcase中用[自动化变量]() `${TEST_NAME}`来引用testcase的名字。只要一项测试开始了，包括所有的自定义keyword、test setup以及Test TearDown，那这个变量就是可用的。
 
@@ -308,6 +307,87 @@ Many lines
 
 testcase有一个简洁准确的名字很重要，这样就不用写说明文档了。如果一个testcase因为内部的逻辑需要添加说明，那可能意味着testcase里的keyword需要更好的名字或者需要改进，而不是添加说明文档。最后，上边例子中的一些元数据，比如环境和用户信息，最后用[标签]() 来指定。
 
-<h3 id="2-2-5">给testcase打标签</h3>
+<h3 id="2-2-5">2.2.5 给testcase打标签</h3>
 
-在Robot中使用标签是一个简单而强大的分类testcase的方法。
+在Robot中使用标签是一个简单而强大的分类testcase的方法。标签是普通文本，如果以下的需求可以使用标签：
+- 标签会显示在测试资料的【报告】（）、【日志】（）中，当然提供了测试用例元数据的测试资料也会显示。
+- 测试用例的【统计】（）（包括全部的、通过的、失败的）是基于标签自动收集的
+- 你可以用标签来选择【包括或者排除】（）要执行的测试用例
+- 你可以用标签来指定哪些测试用例是[严格的]()
+
+这一节只介绍如何设置测试用例的标签，下边列举了不同的设置方法。这些方法可以同时使用。
+
+Setting表中的*Force Tags*
+<br>在有这个setting的测试用例文件中，所有的testcase都会得到一个指定的标签。如果是在测试套件的【初始化文件】（）中使用，所有的子测试套件都会有这个标签。
+
+Setting表中的*Default Tags*
+<br>没有*[Tag]*设置的testcase会被使用这个标签。测试套件的初始化文件不支持默认标签。
+
+TestCase表中的*[Tag]*
+<br>testcase中的标签总是来自于这个值。此外，也可以不用继承*Default Tags*中的值，把*Default Tags*用空值覆盖就就可以，也可以用`NONE`覆盖默认tag。
+
+`--settag`命令行选项
+<br>所有没设置tag的testcase，都可以用这个选项设置tag。
+
+*Set Tags, Remove Tags, Fail and Pass Execution*等keyword
+<br>这些【内置】（）的keyword可以在测试执行过程中动态的操控tag
+
+标签是自有文本，但是他们会被规范化，所以会被转换成小写而且会移除所有的空格。如果一个testcase有被同一个标签设置了好几次，那只会保留第一个。标签可以用变量表示，前提是变量必须存在。
+
+```
+*** Settings ***
+Force Tags      req-42
+Default Tags    owner-john    smoke
+
+*** Variables ***
+${HOST}         10.0.1.42
+
+*** Test Cases ***
+No own tags
+    [Documentation]    This test has tags owner-john, smoke and req-42.
+    No Operation
+
+With own tags
+    [Documentation]    This test has tags not_ready, owner-mrx and req-42.
+    [Tags]    owner-mrx    not_ready
+    No Operation
+
+Own tags with variables
+    [Documentation]    This test has tags host-10.0.1.42 and req-42.
+    [Tags]    host-${HOST}
+    No Operation
+
+Empty own tags
+    [Documentation]    This test has only tag req-42.
+    [Tags]
+    No Operation
+
+Set Tags and Remove Tags Keywords
+    [Documentation]    This test has tags mytag and owner-john.
+    Set Tags    mytag
+    Remove Tags    smoke    req-*
+```
+
+<h4 id="2-2-5-1">保留的标签</h4>
+通常情况下，用户可以使用任何在他们的环境中能使用的标签。但是，有一些确定的标签有一些用来预定义Robot框架自己的标签，如果使用这些标签，可能会有一些意想不到的结果。所有Robot已经指定的和将来会使用的标签都有前缀`robot-`。为了避免这个问题，用户不应该使用任何`robot-`前缀的标签，除非确实要使用(那个标签)的特殊功能。
+
+在写这篇文章的时候，只有一个特殊的标签`robot-exit`在【优雅地停止测试执行】（）时，会被自动加入到测试。更多相似的用法，以后会加入的。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
