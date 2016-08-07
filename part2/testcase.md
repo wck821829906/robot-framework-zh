@@ -311,7 +311,7 @@ testcase有一个简洁准确的名字很重要，这样就不用写说明文档
 
 在Robot中使用标签是一个简单而强大的分类testcase的方法。标签是普通文本，如果以下的需求可以使用标签：
 - 标签会显示在测试资料的[报告]()、[日志]()中，当然提供了测试用例元数据的测试资料也会显示。
-- 测试用例的[统计]()（包括全部的、通过的、失败的）是基于标签自动收集的
+- 测试用例的[统计]()(包括全部的、通过的、失败的)是基于标签自动收集的
 - 你可以用标签来选择[包括或者排除]()要执行的测试用例
 - 你可以用标签来指定哪些测试用例是[严格的]()
 
@@ -418,19 +418,100 @@ Using variables
 setup或者TearDown中keyword的名字可以是个变量，通过在命令行中用变量来指定keyword名有利于在不同的环境中使用不同的setup和TearDown。
 
 >注意:
-<br>[测试套件可以用他们最鸡蛋setup和TearDown]().一个测试套件的setup会在所有testcase或者其子测试套件之前执行，测试套件的TearDown在他们之后执行。
+<br>[测试套件可以用他们自己的setup和teardown]().一个测试套件的setup会在所有testcase或者其子测试套件之前执行，测试套件的TearDown在他们之后执行。
 
+<h3 id="2-2-7">测试模板</h3>
 
+测试模板将正常的[关键字驱动]()测试转换成[数据驱动]()测试。关键字驱动的测试用例是用keyword和他们附带参数构成主体的，然而带模板的testcase只有参数和模板keyword。这样就可以在一个测试或者一个文件中完成多次测试，而不是重复相同的keyword。
 
+模板keyword可以接受正常的位置参数和命名参数，也支持嵌入到keyword名字中的参数。跟其他settings不一样，不能用变量来定义模板。
 
+<h4 id="2-2-7-1">基本用法</h4>
 
+下边的例子介绍了接受正常位置参数的keyword作为模板的用法。这两个testcase在功能上是完全一样的。
 
+```
+*** Test Cases **
+Normal test case
+    Example keyword    first argument    second argument
 
+Templated test case
+    [Template]    Example keyword
+    first argument    second argument
+```
 
+正如上边例子想展示的，可以用*[Template]*设定来为一个单独的testcase指定模板。另一个是利用在Settings表中的*Test Template*，这个模板会应用到这个testcase文件中的所有testcase。*[Template]*setting会覆盖settings表中的模板设置。*[Template]*设置为空值意味着testcase没有模板，即使是*Test Template*已经设置了。除了空值，还可以用`NONE`。
 
+如果一个用模板的testcase包含多行数据，模板会一行一行的读完所有的数据。这意味着，有些keyword要执行很多次，每行数据执行一次。模板测试也比较特殊，所有数据都会执行，不会因为某一行或某几行失败就终止。在正常测试中也可以用这种[可以继续的失败]()模式，只不过模板测试自动开启这个模式。
 
+```
+*** Settings ***
+Test Template    Example keyword
 
+*** Test Cases ***
+Templated test case
+    first round 1     first round 2
+    second round 1    second round 2
+    third round 1     third round 2
+```
 
+在模板中用[默认值参数]()或者[不定长参数]()，还有[命名参数]()和[自由keyword参数]()，跟其他地方的用法一样。参数中使用[变量]()也是正常支持。
+
+<h4 id="2-2-7-2">内嵌关键字的模板</h4>
+
+从robot2.8.2开始，模板支持一系列[嵌入参数的语法]()。这种语法使得模板keyword的名字中也可以有变量。他们被看作是参数的占位符，并在执行的时候回替换成实际参数。计算结果的keyword没意义使用位置参数。用一个例子来说明这个特性很好。
+
+```
+*** Test Cases ***
+Normal test case with embedded arguments
+    The result of 1 + 1 should be 2
+    The result of 1 + 2 should be 3
+
+Template with embedded arguments
+    [Template]    The result of ${calculation} should be ${expected}
+    1 + 1    2
+    1 + 2    3
+
+*** Keywords ***
+The result of ${calculation} should be ${expected}
+    ${result} =    Calculate    ${calculation}
+    Should Be Equal    ${result}     ${expected}
+```
+
+模板使用嵌入式的参数是，模板keyword命中的变量数目必须与传入使用的参数数目一致。参数名不需要跟原来keyword的完全一样，也可以用完全不同的参数
+
+```
+*** Test Cases ***
+Different argument names
+    [Template]    The result of ${foo} should be ${bar}
+    1 + 1    2
+    1 + 2    3
+
+Only some arguments
+    [Template]    The result of ${calculation} should be 3
+    1 + 2
+    4 - 1
+
+New arguments
+    [Template]    The ${meaning} of ${life} should be 42
+    result    21 * 2
+```
+
+使用嵌入参数的模板最大的好处是可以明确指定参数名。当使用普通参数的时候，也可以用命名参数列的方法来达到相同的效果。下一节中[数据驱动风格]的例子将会说明这一点。
+
+<h4 id="2-2-7-3">for循环的模板</h4>
+
+如果模板使用了[for循环](),模板会被用于每一次循环。可以继续的失败模式依旧是开启的，这意味着，所有循环都都会被执行，就算有的会失败。
+``
+```
+*** Test Cases ***
+Template and for
+    [Template]    Example keyword
+    :FOR    ${item}    IN    @{ITEMS}
+    \    ${item}    2nd arg
+    :FOR    ${index}    IN RANGE    42
+    \    1st arg    ${index}
+```
 
 
 
