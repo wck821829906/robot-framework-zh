@@ -1,4 +1,5 @@
-# 建立测试用例
+# 2.2 建立测试用例
+
 这一节介绍的所有的testcase的语法，接下来几节会讨论如何在[test Suite]()中组织[testcase文件]()和[测试套件目录]()
 
 * [2.2.1 测试用例语法](#2-2-1)
@@ -56,15 +57,17 @@ Setting Variables
 
 测试用例也可以有他们自己的设定。这些设置的名字总是在第二列，就是正常keyword名字的位置，他们的值紧跟其后。他们的名字用方括号括起来，好跟keyword区分。下边列出一些settings，稍后介绍他们。
 
-*[Documentation]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用来指定[测试用例说明]()
+*[Documentation]*<br>&emsp;&emsp;用来指定[测试用例说明]()
 
-*[Tags]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用来[给测试用例打标签]()
+*[Tags]*<br>&emsp;&emsp;用来[给测试用例打标签]()
 
-*[Setup], [Teardown]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;指定测试的setup和teardown
+*[Setup], [Teardown]*<br>&emsp;&emsp;指定测试的setup和teardown
 
-*[template]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;指定要使用的[模板关键字]().这个测试的内容全部是这个关键字的参数
+*[template]*
+<br>&emsp;&emsp;指定要使用的[模板关键字]().这个测试的内容全部是这个关键字的参数
 
-*[timeout]*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用来设置[测试用例超时时间]()[超时]()会在今后单独讨论
+*[timeout]*
+<br>&emsp;&emsp;用来设置[测试用例超时时间]()[超时]()会在今后单独讨论
 
 有settings的testcase举例：
 
@@ -80,14 +83,14 @@ Test With Settings
 
 settings表可以有这几种跟testcase相关的setting。这些setting是主要是刚刚列举的testcase setting的默认值。
 
-*Force Tags, Default Tags*<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tags的强制默认值
+*Force Tags, Default Tags*<br>&emsp;&emsp;tags的强制默认值
 
-*Test Setup, Test Teardown**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*Test Setup, Test Teardown**<br>&emsp;&emsp;
 test setup and teardown的默认值
 
-*Test Template**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;默认使用的template keyword.
+*Test Template**<br>&emsp;&emsp;默认使用的template keyword.
 
-*Test Timeout**<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;test case timeout的默认值. Timeouts 会单独拿出一节来讨论.
+*Test Timeout**<br>&emsp;&emsp;test case timeout的默认值. Timeouts 会单独拿出一节来讨论.
 
 <h2 id="2-2-2">使用参数</h2>
 
@@ -318,19 +321,19 @@ testcase有一个简洁准确的名字很重要，这样就不用写说明文档
 这一节只介绍如何设置测试用例的标签，下边列举了不同的设置方法。这些方法可以同时使用。
 
 Setting表中的*Force Tags*
-<br>在有这个setting的测试用例文件中，所有的testcase都会得到一个指定的标签。如果是在测试套件的[初始化文件]()中使用，所有的子测试套件都会有这个标签。
+<br>&emsp;&emsp;在有这个setting的测试用例文件中，所有的testcase都会得到一个指定的标签。如果是在测试套件的[初始化文件]()中使用，所有的子测试套件都会有这个标签。
 
 Setting表中的*Default Tags*
-<br>没有*[Tag]*设置的testcase会被使用这个标签。测试套件的初始化文件不支持默认标签。
+<br>&emsp;&emsp;没有*[Tag]*设置的testcase会被使用这个标签。测试套件的初始化文件不支持默认标签。
 
 TestCase表中的*[Tag]*
-<br>testcase中的标签总是来自于这个值。此外，也可以不用继承*Default Tags*中的值，把*Default Tags*用空值覆盖就就可以，也可以用`NONE`覆盖默认tag。
+<br>&emsp;&emsp;testcase中的标签总是来自于这个值。此外，也可以不用继承*Default Tags*中的值，把*Default Tags*用空值覆盖就就可以，也可以用`NONE`覆盖默认tag。
 
 `--settag`命令行选项
-<br>所有没设置tag的testcase，都可以用这个选项设置tag。
+<br>&emsp;&emsp;所有没设置tag的testcase，都可以用这个选项设置tag。
 
 *Set Tags, Remove Tags, Fail and Pass Execution*等keyword
-<br>这些[内置]()的keyword可以在测试执行过程中动态的操控tag
+<br>&emsp;&emsp;这些[内置]()的keyword可以在测试执行过程中动态的操控tag
 
 标签是自有文本，但是他们会被规范化，所以会被转换成小写而且会移除所有的空格。如果一个testcase有被同一个标签设置了好几次，那只会保留第一个。标签可以用变量表示，前提是变量必须存在。
 
