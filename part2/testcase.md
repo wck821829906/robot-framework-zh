@@ -521,10 +521,65 @@ Template and for
 
 工作流测试，比如之前描述的*Valid Login*测试，有好几个keyword和参数构成。他们正常的结构就是首先让系统进入初始状态（比如*Valid Login*中的*Open Login Page*），然后做一些事情，比如（*Input Name*, *Input Password*, *Submit Credentials*），最后验证系统是否达到预期，（*Welcome Page Should Be Open*）。
 
-<h4 id="2-2-8-2">数据驱动模板</h4>
+<h4 id="2-2-8-2">数据驱动</h4>
 
 另一种测试风格是数据驱动的测试，测试用例只用一个高级的隐藏了实际的测试流程的keyword，通常是[自定义keyword]()。这些测试在在测试相同场景下不同的输入或者输出的测试中很有用。每一个测试中keyword可以重复，但是[测试模板]()功能只允许指定一次。
 
+```
+*** Settings ***
+Test Template    Login with invalid credentials should fail
+
+*** Test Cases ***                USERNAME         PASSWORD
+Invalid User Name                 invalid          ${VALID PASSWORD}
+Invalid Password                  ${VALID USER}    invalid
+Invalid User Name and Password    invalid          invalid
+Empty User Name                   ${EMPTY}         ${VALID PASSWORD}
+Empty Password                    ${VALID USER}    ${EMPTY}
+Empty User Name and Password      ${EMPTY}         ${EMPTY}
+```
+
+>提示:<br> 像上面例子中的一样，给列命名能使得测试更易读性。这是可能的，因为标题行除了第一个单元格以外的单元格都是[被忽略]()的
+
+上边例子有6个单独的测试，每一个都包含一个无效用户名或无效密码。而下边的例子展示了所有的组合。使用[测试模板]()的时候，所有的测试都会被执行，即使会失败，所以这里安装风格没什么太大的区别。上边的例子中每个单独的组合被命名了，为了能更清楚的看明白测试的内容，但是这样的测试太多可能会让统计结构边的混乱。要选取那种风格依赖于工作环境或者个人偏好。
+
+```
+*** Test Cases ***
+Invalid Password
+    [Template]    Login with invalid credentials should fail
+    invalid          ${VALID PASSWORD}
+    ${VALID USER}    invalid
+    invalid          whatever
+    ${EMPTY}         ${VALID PASSWORD}
+    ${VALID USER}    ${EMPTY}
+    ${EMPTY}         ${EMPTY}
+```
+
 <h4 id="2-2-8-3">行为驱动</h4>
+
+测试用例可能也需要非技术人员能看明白。这些*可执行的需求*是通常被称为[验收测试驱动开发]()(ATDD)或者[规格举例]()
+
+写这样的需求或者测试的方式是使用[行为驱动开发]()中流行的的*Given-When-Then*风格。写这种风格的测试时，初始状态通常是一个Start开头的keyword给出，操作由一个When开头的keyword描述，期望的结构则是一个有Then开头的keyword。And或者But开头的keyword可以用来表示多个操作。
+
+```
+*** Test Cases ***
+Valid Login
+    Given login page is open
+    When valid username and password are inserted
+    and credentials are submitted
+    Then welcome page should be open
+```
+
+<h5>忽略<i>Given/When/Then/And/But</i>前缀</h5>
+
+搜索keyword时，如果全名的keyword没有会找到，则会删掉前缀 *Given，When，Then，And和But*然后再进行匹配。对于自定义keyword和库keyword都是有效的。比如，上边例子中的*Given login page is open*可以是一个自定义keyword的实现，不论有没有单词Given。忽略了前缀也使得同一个keyword可以用于多种前缀。比如*Welcome page should be open*可以当 *And welcome page should be open*来用
+
+>注意:<br> 忽略*but*前缀是Robot框架2.8.7的新特性
+
+<h5>在keyword中嵌入数据</h5>
+
+在keyword的实现中传入数据是很有用的。自定义keyword通过嵌入参数在keyword名中
+
+
+
 
 
